@@ -124,7 +124,6 @@ section[data-testid="stSidebar"] .stSlider label{font-family:'Instrument Sans',s
 .proxy-box-body b{color:var(--text);}
 .proxy-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;}
 .proxy-tag{background:rgba(188,140,255,0.12);border:1px solid rgba(188,140,255,0.3);border-radius:20px;padding:4px 12px;font-size:11px;color:#BC8CFF;font-weight:600;}
-
 </style>
 """, unsafe_allow_html=True)
 
@@ -203,9 +202,9 @@ with st.sidebar:
         <b>Significant Predictors</b><br>
         ✅ u5_mortality (β = +22.74) ← #1<br>
         ✅ gov_expenditure (β = −3.64)<br>
-        ✅ trained_teachers (β = −2.82)<br>
+        ✅ trained_teachers (β = −2.82)<br><br>
         <b>Data Coverage</b><br>
-        75 countries · 2000–2023 
+        75 countries · 2000–2023
     </div>
     """, unsafe_allow_html=True)
 
@@ -688,6 +687,7 @@ st.markdown(proxy_panel_html, unsafe_allow_html=True)
 top10_u5_avg = filtered_df.nlargest(10, "learning_poverty")["u5_mortality"].mean()
 bot10_u5_avg = filtered_df.nsmallest(10, "learning_poverty")["u5_mortality"].mean()
 low_tt_count = len(filtered_df[filtered_df["trained_teachers"] < 70])
+low_tt_base  = int(filtered_df["trained_teachers"].notna().sum())   # FIX 1: correct denominator
 
 panel2_html = (
 '<div class="insight-panel">'
@@ -712,8 +712,8 @@ f'</div>'
 f'<div class="priority-card p2">'
 f'<div class="priority-label">#2 Priority</div>'
 f'<div class="priority-card-title">Set a teacher training floor, not a target</div>'
-f'<div class="priority-stat-num purple">{low_tt_count} of {n_countries} countries</div>'
-f'<div class="priority-stat-lbl">below 70% trained teacher coverage in {selected_year} (avg {avg_tt:.1f}%)</div>'
+f'<div class="priority-stat-num purple">{low_tt_count} of {low_tt_base} countries</div>'
+f'<div class="priority-stat-lbl">below 70% trained teacher coverage in {selected_year} — among countries with available data (avg {avg_tt:.1f}%)</div>'
 f'<div class="priority-card-body">These same countries account for the majority of the highest LP cases. The model associates trained teacher share with a <b>~2.82 pp reduction in LP per 1 SD gain (β = −2.82, p = 0.011)</b> — the most actionable within-school lever governments control directly. Pupil-teacher ratio was also tested but found non-significant (p = 0.595): quality of teachers matters more than quantity.</div>'
 f'<div class="priority-ask p2">'
 f'<div class="priority-ask-label p2">Who teaches the teachers?</div>'
@@ -773,7 +773,6 @@ components.html("""
     width: 100%;
   }
   body { padding: 4px 0 8px 0; }
-
   .ref-wrap {
     background: #161B22;
     border: 1px solid #30363D;
@@ -782,148 +781,72 @@ components.html("""
     width: 100%;
   }
   .ref-label {
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: .18em;
-    text-transform: uppercase;
-    color: #8B949E;
-    margin-bottom: 6px;
+    font-size: 11px; font-weight: 700; letter-spacing: .18em;
+    text-transform: uppercase; color: #8B949E; margin-bottom: 6px;
   }
   .ref-title {
-    font-size: 20px;
-    font-weight: 800;
-    color: #E6EDF3;
-    margin-bottom: 20px;
+    font-size: 20px; font-weight: 800; color: #E6EDF3; margin-bottom: 20px;
   }
   .ref-section-label {
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: .12em;
-    text-transform: uppercase;
-    margin-bottom: 12px;
+    font-size: 12px; font-weight: 700; letter-spacing: .12em;
+    text-transform: uppercase; margin-bottom: 12px;
   }
   .ref-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 12px;
-    margin-bottom: 28px;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px; margin-bottom: 28px;
   }
   .ref-card {
-    background: #1C2333;
-    border: 1px solid #30363D;
-    border-radius: 10px;
-    padding: 14px 16px;
+    background: #1C2333; border: 1px solid #30363D;
+    border-radius: 10px; padding: 14px 16px;
   }
   .ref-card-title {
-    font-size: 11px;
-    font-weight: 700;
-    color: #79C0FF;
-    text-transform: uppercase;
-    letter-spacing: .08em;
-    margin-bottom: 6px;
+    font-size: 11px; font-weight: 700; color: #79C0FF;
+    text-transform: uppercase; letter-spacing: .08em; margin-bottom: 6px;
   }
   .ref-card-body {
-    font-size: 12px;
-    color: #8B949E;
-    line-height: 1.7;
-    word-break: break-all;
-    overflow-wrap: break-word;
+    font-size: 12px; color: #8B949E; line-height: 1.7;
+    word-break: break-all; overflow-wrap: break-word;
   }
   .ref-card-body a {
-    color: #58A6FF;
-    text-decoration: none;
-    word-break: break-all;
-    overflow-wrap: break-word;
-    display: inline-block;
-    max-width: 100%;
+    color: #58A6FF; text-decoration: none; word-break: break-all;
+    overflow-wrap: break-word; display: inline-block; max-width: 100%;
   }
   .ref-card-body a:hover { text-decoration: underline; }
-
-  .ref-list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-bottom: 20px;
-  }
+  .ref-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
   .ref-lit {
-    background: #1C2333;
-    border: 1px solid #30363D;
-    border-left: 3px solid #BC8CFF;
-    border-radius: 10px;
-    padding: 12px 16px;
+    background: #1C2333; border: 1px solid #30363D;
+    border-left: 3px solid #BC8CFF; border-radius: 10px; padding: 12px 16px;
   }
-  .ref-lit-title {
-    font-size: 12.5px;
-    color: #E6EDF3;
-    font-weight: 600;
-    margin-bottom: 4px;
-  }
-  .ref-lit-body {
-    font-size: 12px;
-    color: #8B949E;
-    line-height: 1.6;
-    margin-bottom: 6px;
-  }
+  .ref-lit-title { font-size: 12.5px; color: #E6EDF3; font-weight: 600; margin-bottom: 4px; }
+  .ref-lit-body { font-size: 12px; color: #8B949E; line-height: 1.6; margin-bottom: 6px; }
   .ref-lit a {
-    font-size: 11.5px;
-    color: #58A6FF;
-    text-decoration: none;
-    word-break: break-all;
-    overflow-wrap: break-word;
-    display: inline-block;
-    max-width: 100%;
+    font-size: 11.5px; color: #58A6FF; text-decoration: none;
+    word-break: break-all; overflow-wrap: break-word;
+    display: inline-block; max-width: 100%;
   }
   .ref-lit a:hover { text-decoration: underline; }
-
   .ref-credits {
-    text-align: center;
-    padding: 14px 0 0 0;
-    font-size: 12px;
-    color: #8B949E;
-    border-top: 1px solid #30363D;
-    margin-top: 24px;
+    text-align: center; padding: 14px 0 0 0; font-size: 12px; color: #8B949E;
+    border-top: 1px solid #30363D; margin-top: 24px;
   }
   .ref-credits b { color: #79C0FF; }
-
-  /* ── Limitations section ── */
-  .lim-wrap {
-    margin-top: 28px;
-    border-top: 1px solid #30363D;
-    padding-top: 24px;
-  }
+  .lim-wrap { margin-top: 28px; border-top: 1px solid #30363D; padding-top: 24px; }
   .lim-section-label {
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: .18em;
-    text-transform: uppercase;
-    color: #8B949E;
-    margin-bottom: 6px;
+    font-size: 11px; font-weight: 700; letter-spacing: .18em;
+    text-transform: uppercase; color: #8B949E; margin-bottom: 6px;
   }
-  .lim-title {
-    font-size: 20px;
-    font-weight: 800;
-    color: #E6EDF3;
-    margin-bottom: 6px;
-  }
+  .lim-title { font-size: 20px; font-weight: 800; color: #E6EDF3; margin-bottom: 6px; }
   .lim-subtitle {
-    font-size: 12.5px;
-    color: #8B949E;
-    line-height: 1.7;
-    margin-bottom: 20px;
-    max-width: 820px;
+    font-size: 12.5px; color: #8B949E; line-height: 1.7;
+    margin-bottom: 20px; max-width: 820px;
   }
   .lim-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 12px;
-    margin-bottom: 20px;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px; margin-bottom: 20px;
   }
   .lim-card {
-    border-radius: 12px;
-    padding: 16px 18px;
-    border-left: 4px solid;
-    background: rgba(227,179,65,0.07);
-    border-color: #E3B341;
+    border-radius: 12px; padding: 16px 18px; border-left: 4px solid;
+    background: rgba(227,179,65,0.07); border-color: #E3B341;
   }
   .lim-card.orange { background: rgba(247,129,102,0.07); border-color: #F78166; }
   .lim-card.blue   { background: rgba(121,192,255,0.07); border-color: #79C0FF; }
@@ -931,60 +854,31 @@ components.html("""
   .lim-card.green  { background: rgba(86,211,100,0.07);  border-color: #56D364; }
   .lim-card-icon   { font-size: 20px; margin-bottom: 8px; display: block; }
   .lim-card-title  {
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: .1em;
-    text-transform: uppercase;
-    color: #E3B341;
-    margin-bottom: 6px;
+    font-size: 11px; font-weight: 700; letter-spacing: .1em;
+    text-transform: uppercase; color: #E3B341; margin-bottom: 6px;
   }
   .lim-card.orange .lim-card-title { color: #F78166; }
   .lim-card.blue   .lim-card-title { color: #79C0FF; }
   .lim-card.purple .lim-card-title { color: #BC8CFF; }
   .lim-card.green  .lim-card-title { color: #56D364; }
-  .lim-card-body {
-    font-size: 12px;
-    color: #8B949E;
-    line-height: 1.7;
-  }
+  .lim-card-body { font-size: 12px; color: #8B949E; line-height: 1.7; }
   .lim-card-body b { color: #E6EDF3; }
   .lim-declaration {
-    background: rgba(121,192,255,0.05);
-    border: 1px solid rgba(121,192,255,0.2);
-    border-radius: 12px;
-    padding: 18px 20px;
-    margin-top: 4px;
+    background: rgba(121,192,255,0.05); border: 1px solid rgba(121,192,255,0.2);
+    border-radius: 12px; padding: 18px 20px; margin-top: 4px;
   }
   .lim-declaration-title {
-    font-size: 12px;
-    font-weight: 700;
-    color: #79C0FF;
-    letter-spacing: .08em;
-    text-transform: uppercase;
-    margin-bottom: 10px;
+    font-size: 12px; font-weight: 700; color: #79C0FF;
+    letter-spacing: .08em; text-transform: uppercase; margin-bottom: 10px;
   }
-  .lim-declaration-body {
-    font-size: 12px;
-    color: #8B949E;
-    line-height: 1.8;
-  }
+  .lim-declaration-body { font-size: 12px; color: #8B949E; line-height: 1.8; }
   .lim-declaration-body b { color: #E6EDF3; }
-  .lim-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 12px;
-  }
+  .lim-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
   .lim-tag {
-    background: rgba(227,179,65,0.1);
-    border: 1px solid rgba(227,179,65,0.3);
-    border-radius: 20px;
-    padding: 3px 11px;
-    font-size: 11px;
-    color: #E3B341;
-    font-weight: 600;
+    background: rgba(227,179,65,0.1); border: 1px solid rgba(227,179,65,0.3);
+    border-radius: 20px; padding: 3px 11px; font-size: 11px;
+    color: #E3B341; font-weight: 600;
   }
-
   @media (max-width: 600px) {
     .ref-wrap { padding: 18px 14px; }
     .ref-grid  { grid-template-columns: 1fr; }
@@ -994,63 +888,49 @@ components.html("""
 </head>
 <body>
 <div class="ref-wrap">
-
- 
   <div class="ref-section-label" style="color:#BC8CFF;">&#128218; Key Literature &amp; Reports</div>
   <div class="ref-list">
-
     <div class="ref-lit">
       <div class="ref-lit-title">World Bank (2022) — <em>The State of Global Learning Poverty</em></div>
       <div class="ref-lit-body">Flagship report defining the learning poverty metric and the SDG 4 target of under 10% by 2030. Core reference for this dashboard's response variable.</div>
       <a href="https://www.worldbank.org/en/topic/education/publication/state-of-global-learning-poverty" target="_blank">worldbank.org &#8594; State of Global Learning Poverty</a>
     </div>
-
     <div class="ref-lit">
       <div class="ref-lit-title">Alderman, H., Hoddinott, J., &amp; Kinsey, B. (2006) — <em>Long term consequences of early childhood malnutrition</em></div>
       <div class="ref-lit-body">Oxford Economic Papers. Demonstrates that early malnutrition in high-mortality settings produces lasting deficits in cognitive development and school attainment — basis for using u5_mortality as a composite proxy.</div>
       <a href="https://academic.oup.com/oep/article/58/3/450/2361942" target="_blank">academic.oup.com &#8594; Oxford Economic Papers, Vol. 58(3)</a>
     </div>
-
     <div class="ref-lit">
       <div class="ref-lit-title">UNICEF, WHO &amp; World Bank (2023) — <em>Levels &amp; Trends in Child Mortality Report</em></div>
       <div class="ref-lit-body">Annual joint report documenting under-5 mortality trends globally, confirming the overlap between high child mortality environments and poor educational outcomes (SDG 3–SDG 4 interconnect).</div>
       <a href="https://data.unicef.org/resources/levels-and-trends-in-child-mortality/" target="_blank">data.unicef.org &#8594; Levels &amp; Trends in Child Mortality</a>
     </div>
-
     <div class="ref-lit">
       <div class="ref-lit-title">UNESCO (2023) — <em>Global Education Monitoring (GEM) Report</em></div>
       <div class="ref-lit-body">Annual report tracking global progress toward SDG 4, including foundational learning outcomes, teacher training gaps, and public education spending trends across low- and middle-income countries.</div>
       <a href="https://www.unesco.org/gem-report/en" target="_blank">unesco.org &#8594; Global Education Monitoring Report</a>
     </div>
-
     <div class="ref-lit">
       <div class="ref-lit-title">Glewwe, P. &amp; Muralidharan, K. (2016) — <em>Improving Education Outcomes in Developing Countries</em></div>
       <div class="ref-lit-body">Handbook of the Economics of Education, Vol. 5. Evidence review on teacher training, class size, and expenditure effectiveness — basis for trained teachers and gov. expenditure policy recommendations.</div>
       <a href="https://www.sciencedirect.com/science/article/pii/S1574069216000039" target="_blank">sciencedirect.com &#8594; Handbook of Economics of Education, Vol. 5</a>
     </div>
-
   </div>
-
   <div class="ref-credits">
     Dashboard created for <b>SDG 4 Tracking Matrix</b> &middot; Global Insights Interface Operational &middot;
     Data: World Bank WDI &middot; UNESCO UIS &middot; UNICEF &middot; 2000&ndash;2023
   </div>
-
 </div>
-
 <script>
-  // Auto-resize iframe to exact content height — no clipping, no fixed px
   function sendHeight() {
     const h = document.documentElement.scrollHeight;
     window.parent.postMessage({ type: 'streamlit:setFrameHeight', height: h }, '*');
   }
   window.addEventListener('load', sendHeight);
   window.addEventListener('resize', sendHeight);
-  // Fire again after fonts/layout settle
   setTimeout(sendHeight, 200);
   setTimeout(sendHeight, 600);
 </script>
 </body>
 </html>
-""", height=1250, scrolling=False)
-
+""", height=1300, scrolling=True)
